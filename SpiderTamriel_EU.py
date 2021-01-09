@@ -11,14 +11,8 @@ from urllib.parse import urlparse
 
 mainGetUrl = 'http://ttccrawler-8176c.appspot.com/list'
 
-
 class SpiderTamrielEu(scrapy.Spider):
     name = 'SpiderTamrielEU'
-
-    # start_urls = ['https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=11971&SortBy=Price&Order=asc',
-    # 'https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=3516&SortBy=Price&Order=asc',
-    # 'https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=593&SortBy=Price&Order=asc'
-    # ]
 
     f=open('out.json','w').close()
     start_urls = []
@@ -41,10 +35,6 @@ class SpiderTamrielEu(scrapy.Spider):
             start_urls.append(url)
 
         qualityIds.clear()
-
-    # def start_requests(self):
-    #     for url in self.start_urls:
-    #         yield scrapy.Request(url, callback=self.parse)
 
     def parse(self, response):
         divs = response.xpath('//tr[contains(@class,"cursor-pointer")]')
