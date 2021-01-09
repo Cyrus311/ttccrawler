@@ -19,4 +19,5 @@ class ElderScrollsItem(scrapy.Item):
     trader = scrapy.Field()
     location = scrapy.Field()
     price = scrapy.Field()
+    quantity=scrapy.Field()
     lastSeen = scrapy.Field()

@@ -20,6 +20,7 @@ class SpiderTamrielEu(scrapy.Spider):
     # 'https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=593&SortBy=Price&Order=asc'
     # ]
 
+    f=open('out.json','w').close()
     start_urls = []
     mainDataResponse = requests.get(mainGetUrl)
 
@@ -76,6 +77,7 @@ class SpiderTamrielEu(scrapy.Spider):
             totalPrice = div.xpath(
                 "normalize-space(.//td[4])").extract_first()
             item['price'] = totalPrice.split('X')[0].replace(',', '').strip()
+            item['quantity']=totalPrice.split('=')[1].strip()
             item['lastSeen'] = div.xpath(
                 ".//td[5]//@data-mins-elapsed").extract_first()
             yield item
