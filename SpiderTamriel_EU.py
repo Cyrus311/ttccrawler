@@ -37,10 +37,10 @@ class SpiderTamrielEu(scrapy.Spider):
                     qualityIds.append(alarm['quality'])
                     url = 'https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=' + \
                         esoItem['id']+'&ItemQualityID=' + \
-                        str(alarm['quality'])+'&SortBy=LastSeen&Order=asc'
+                        str(alarm['quality'])+'&SortBy=LastSeen&Order=desc'
             else:
                 url = 'https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=' + \
-                    esoItem['id']+'&SortBy=LastSeen&Order=asc'
+                    esoItem['id']+'&SortBy=LastSeen&Order=desc'
             start_urls.append(url)
 
         qualityIds.clear()
