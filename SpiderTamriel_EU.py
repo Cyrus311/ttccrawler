@@ -14,15 +14,18 @@ mainGetUrl = 'http://ttccrawler-8176c.appspot.com/list'
 
 class SpiderTamrielEu(scrapy.Spider):
     name = 'SpiderTamrielEU'
-    
+
     start_urls = []
     mainDataResponse = requests.get(mainGetUrl)
     custom_settings = {
+        "USER_AGENT":"TTC Crawler",
         "DOWNLOAD_DELAY": 5,
         "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
-        "CONCURRENT_REQUESTS":1,
-        "FEED_FORMAT":"json",
-        "FEED_URI":"out.json"
+        "CONCURRENT_REQUESTS": 1,
+        "AUTOTHROTTLE_ENABLED": True,
+        "HTTPCACHE_ENABLED": True,
+        "FEED_FORMAT": "json",
+        "FEED_URI": "out.json"
     }
     for esoItem in mainDataResponse.json():
         qualityIds = []
@@ -48,7 +51,7 @@ class SpiderTamrielEu(scrapy.Spider):
         for div in divs:
             item = ElderScrollsItem()
             parsed = urlparse(response.request.url)
-            item['itemId']=parse_qs(parsed.query)['ItemID'][0].strip()
+            item['itemId'] = parse_qs(parsed.query)['ItemID'][0].strip()
             tradeLink = div.xpath(
                 "normalize-space(//tr//@data-on-click-link)").extract_first()
             item['tradeId'] = tradeLink.split('/')[4]
@@ -75,8 +78,8 @@ class SpiderTamrielEu(scrapy.Spider):
                 "normalize-space(.//td[4])").extract_first()
             item['price'] = priceRow.split('X')[0].replace(',', '').strip()
             quantityArray = priceRow.split('=')[0].strip()
-            item['quantity']=quantityArray.split('X')[1].strip()
-            item['totalPrice']=priceRow.split('=')[1].strip()
+            item['quantity'] = quantityArray.split('X')[1].strip()
+            item['totalPrice'] = priceRow.split('=')[1].strip()
             item['lastSeen'] = div.xpath(
                 ".//td[5]//@data-mins-elapsed").extract_first()
             yield item
