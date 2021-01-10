@@ -23,7 +23,6 @@ class SpiderTamrielEu(scrapy.Spider):
         "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
         "CONCURRENT_REQUESTS": 1,
         "AUTOTHROTTLE_ENABLED": True,
-        "HTTPCACHE_ENABLED": True,
         "FEED_FORMAT": "json",
         "FEED_URI": "out.json"
     }
