@@ -42,3 +42,6 @@ def sendNotification(notificationObj):
     url_parts[4] = urlencode(query)
     new_url=urlparse.urlunparse(url_parts)
     requests.post(new_url)
+
+def updateAlarm(itemId,chatId):
+    pass

@@ -1,6 +1,7 @@
 import scrapy
 import pylint
 import requests
+import time
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
 from item import ElderScrollsItem
@@ -13,11 +14,16 @@ mainGetUrl = 'http://ttccrawler-8176c.appspot.com/list'
 
 class SpiderTamrielEu(scrapy.Spider):
     name = 'SpiderTamrielEU'
-
-    f=open('out.json','w').close()
+    
     start_urls = []
     mainDataResponse = requests.get(mainGetUrl)
-
+    custom_settings = {
+        "DOWNLOAD_DELAY": 5,
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
+        "CONCURRENT_REQUESTS":1,
+        "FEED_FORMAT":"json",
+        "FEED_URI":"out.json"
+    }
     for esoItem in mainDataResponse.json():
         qualityIds = []
 
@@ -37,6 +43,7 @@ class SpiderTamrielEu(scrapy.Spider):
         qualityIds.clear()
 
     def parse(self, response):
+        time.sleep(10)
         divs = response.xpath('//tr[contains(@class,"cursor-pointer")]')
         for div in divs:
             item = ElderScrollsItem()
@@ -64,10 +71,12 @@ class SpiderTamrielEu(scrapy.Spider):
 
             item['location'] = div.xpath("normalize-space((.//td[@class='hidden-xs']//div)[2])").extract_first(
             ) + " -> " + div.xpath("normalize-space((.//td[@class='hidden-xs']//div)[3])").extract_first()
-            totalPrice = div.xpath(
+            priceRow = div.xpath(
                 "normalize-space(.//td[4])").extract_first()
-            item['price'] = totalPrice.split('X')[0].replace(',', '').strip()
-            item['quantity']=totalPrice.split('=')[1].strip()
+            item['price'] = priceRow.split('X')[0].replace(',', '').strip()
+            quantityArray = priceRow.split('=')[0].strip()
+            item['quantity']=quantityArray.split('X')[1].strip()
+            item['totalPrice']=priceRow.split('=')[1].strip()
             item['lastSeen'] = div.xpath(
                 ".//td[5]//@data-mins-elapsed").extract_first()
             yield item
