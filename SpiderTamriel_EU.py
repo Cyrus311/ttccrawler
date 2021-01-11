@@ -26,6 +26,7 @@ class SpiderTamrielEu(scrapy.Spider):
         "FEED_FORMAT": "json",
         "FEED_URI": "out.json"
     }
+    open('out.json','w').close()
     for esoItem in mainDataResponse.json():
         qualityIds = []
         itemUrlAdded=False

@@ -41,7 +41,7 @@ def dataProcess(self, *args):
                     }
                     sendNotification(notificationObj)
                     #updateAlarm(item['tradeId'],alarm['chatId'])
-    open('out.json','w').close()
+    
 
 def sleep(self, *args, seconds):
     return deferLater(reactor, seconds, lambda: None)

@@ -24,7 +24,7 @@ def getMessage(itemId,alarm,crawlerData):
                     sortCrawler[0]['quantity']), location=sortCrawler[0]['location'])
     else:
         if 'price' in alarm:
-            foundData = list(filter(lambda x: (x["itemId"] == itemId and int(
+            foundData = list(filter(lambda x: (x["itemId"] == itemId and float(
                 x['price']) <= alarm['price']), crawlerData))
             if len(foundData) > 0:
                 sortCrawler = sorted(foundData, key=lambda k: float(
