@@ -41,13 +41,35 @@ def dataProcess(self, *args):
                     }
                     sendNotification(notificationObj)
                     #updateAlarm(item['tradeId'],alarm['chatId'])
-    
+    open('out.json','w').close()
+
+def cleanOutJson():
+    open('out.json','w').close()
 
 def sleep(self, *args, seconds):
     return deferLater(reactor, seconds, lambda: None)
 
 def _crawl(result, spider):
-    deferred = process.crawl(spider)
+    start_urls=[]
+    mainGetUrl = 'http://ttccrawler-8176c.appspot.com/list'
+    mainDataResponse = requests.get(mainGetUrl)
+    for esoItem in mainDataResponse.json():
+        qualityIds = []
+        itemUrlAdded=False
+        for alarm in esoItem['alarms']:
+            if 'quality' in alarm:
+                if not alarm['quality'] in qualityIds:
+                    qualityIds.append(alarm['quality'])
+                    start_urls.append( 'https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=' + \
+                        esoItem['id']+'&ItemQualityID=' + \
+                        str(alarm['quality'])+'&SortBy=LastSeen&Order=desc')
+            else:
+                if not itemUrlAdded:
+                    start_urls.append('https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=' + \
+                        esoItem['id']+'&SortBy=LastSeen&Order=desc')
+                    itemUrlAdded=True
+        qualityIds.clear()
+    deferred = process.crawl(spider,start_urls=start_urls)
     deferred.addCallback(dataProcess)
     deferred.addCallback(lambda results: print('waiting 300 seconds before restart...'))
     deferred.addCallback(sleep, seconds=300)

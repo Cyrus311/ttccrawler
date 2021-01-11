@@ -10,45 +10,22 @@ from scrapy.crawler import CrawlerProcess
 from urllib.parse import urljoin
 from urllib.parse import urlparse
 
-mainGetUrl = 'http://ttccrawler-8176c.appspot.com/list'
-
 class SpiderTamrielEu(scrapy.Spider):
     name = 'SpiderTamrielEU'
 
-    start_urls = []
-    mainDataResponse = requests.get(mainGetUrl)
     custom_settings = {
         "USER_AGENT":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36",
         "DOWNLOAD_DELAY": 8,
         "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
         "CONCURRENT_REQUESTS": 1,
         "AUTOTHROTTLE_ENABLED": True,
+        "HTTPCACHE_ENABLED":True,
         "FEED_FORMAT": "json",
         "FEED_URI": "out.json"
     }
-    open('out.json','w').close()
-    for esoItem in mainDataResponse.json():
-        qualityIds = []
-        itemUrlAdded=False
-        for alarm in esoItem['alarms']:
-            if 'quality' in alarm:
-                if not alarm['quality'] in qualityIds:
-                    qualityIds.append(alarm['quality'])
-                    start_urls.append( 'https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=' + \
-                        esoItem['id']+'&ItemQualityID=' + \
-                        str(alarm['quality'])+'&SortBy=LastSeen&Order=desc')
-            else:
-                if not itemUrlAdded:
-                    start_urls.append('https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=' + \
-                        esoItem['id']+'&SortBy=LastSeen&Order=desc')
-                    itemUrlAdded=True
-        qualityIds.clear()
-    print('='*15+'URLS'+'='*15)
-    for url in start_urls:
-        print(url)
-    print('='*15+'URLS'+'='*15)
+    
     def parse(self, response):
-        time.sleep(10)
+        time.sleep(2)
         divs = response.xpath('//tr[contains(@class,"cursor-pointer")]')
         for div in divs:
             item = ElderScrollsItem()
