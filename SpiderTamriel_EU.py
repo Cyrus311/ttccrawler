@@ -18,8 +18,8 @@ class SpiderTamrielEu(scrapy.Spider):
     start_urls = []
     mainDataResponse = requests.get(mainGetUrl)
     custom_settings = {
-        "USER_AGENT":"TTC Crawler",
-        "DOWNLOAD_DELAY": 5,
+        "USER_AGENT":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36",
+        "DOWNLOAD_DELAY": 8,
         "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
         "CONCURRENT_REQUESTS": 1,
         "AUTOTHROTTLE_ENABLED": True,
@@ -28,22 +28,24 @@ class SpiderTamrielEu(scrapy.Spider):
     }
     for esoItem in mainDataResponse.json():
         qualityIds = []
-
+        itemUrlAdded=False
         for alarm in esoItem['alarms']:
-            url = ''
             if 'quality' in alarm:
                 if not alarm['quality'] in qualityIds:
                     qualityIds.append(alarm['quality'])
-                    url = 'https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=' + \
+                    start_urls.append( 'https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=' + \
                         esoItem['id']+'&ItemQualityID=' + \
-                        str(alarm['quality'])+'&SortBy=LastSeen&Order=desc'
+                        str(alarm['quality'])+'&SortBy=LastSeen&Order=desc')
             else:
-                url = 'https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=' + \
-                    esoItem['id']+'&SortBy=LastSeen&Order=desc'
-            start_urls.append(url)
-
+                if not itemUrlAdded:
+                    start_urls.append('https://eu.tamrieltradecentre.com/pc/Trade/SearchResult?ItemID=' + \
+                        esoItem['id']+'&SortBy=LastSeen&Order=desc')
+                    itemUrlAdded=True
         qualityIds.clear()
-
+    print('='*15+'URLS'+'='*15)
+    for url in start_urls:
+        print(url)
+    print('='*15+'URLS'+'='*15)
     def parse(self, response):
         time.sleep(10)
         divs = response.xpath('//tr[contains(@class,"cursor-pointer")]')
