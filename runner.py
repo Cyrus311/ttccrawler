@@ -2,7 +2,7 @@ import os
 import json
 import requests
 import time
-from scrapy.cmdline import execute
+from scrapy import settings
 from helper import Quality
 from helper import getMessage
 from helper import sendNotification
@@ -22,6 +22,7 @@ def is_json(myjson):
     except TypeError:
         return False
     return True
+
 
 
 def dataProcess(self, *args):
@@ -79,7 +80,7 @@ def _crawl(result, spider):
 try:
     s = get_project_settings()
     process = CrawlerProcess(s)
-    _crawl(None, SpiderTamriel_EU.SpiderTamrielEu)
+    _crawl(None, SpiderTamriel_EU.SpiderTamrielAlarm)
     process.start()
 except SystemExit:
     pass

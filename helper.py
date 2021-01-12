@@ -3,6 +3,8 @@ from urllib.parse import parse_qs
 from urllib.parse import urlencode
 from enum import Enum
 import requests
+import random
+import json
 
 class Quality(Enum):
     Normal=0
@@ -11,6 +13,9 @@ class Quality(Enum):
     Epic=3
     Legendary=4
 
+def getAgent():
+    with open('./user_agents.json') as json_file:
+        return random.choice(json.load(json_file)['user_agents'])
 
 def getMessage(itemId,alarm,crawlerData):
     if 'quality' in alarm:
@@ -29,7 +34,7 @@ def getMessage(itemId,alarm,crawlerData):
             if len(foundData) > 0:
                 sortCrawler = sorted(foundData, key=lambda k: float(
                     k['price']) and int(k['lastSeen']), reverse=False)
-                return '{item} available in \n{location} \nPrice: {price} \nQuantity: {quantity}'.format(item=sortCrawler[0]['name'], price=str(sortCrawler[0]['price']), quantity=str(
+                return '{item} available in \n{location} \nQuality: {quality} \nPrice: {price} \nQuantity: {quantity}'.format(item=sortCrawler[0]['name'], quality=Quality(sortCrawler[0]['quality']).name, price=str(sortCrawler[0]['price']), quantity=str(
                     sortCrawler[0]['quantity']), location=sortCrawler[0]['location'])
     return ''
 

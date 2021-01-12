@@ -9,23 +9,29 @@ from scrapy import Request
 from scrapy.crawler import CrawlerProcess
 from urllib.parse import urljoin
 from urllib.parse import urlparse
+from helper import getAgent
 
-class SpiderTamrielEu(scrapy.Spider):
-    name = 'SpiderTamrielEU'
+class SpiderTamrielAlarm(scrapy.Spider):
+    name = 'SpiderTamrielAlarm'
 
     custom_settings = {
-        "USER_AGENT":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36",
         "DOWNLOAD_DELAY": 8,
         "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
         "CONCURRENT_REQUESTS": 1,
         "AUTOTHROTTLE_ENABLED": True,
-        "HTTPCACHE_ENABLED":True,
+        "COOKIES_ENABLED":False,
         "FEED_FORMAT": "json",
         "FEED_URI": "out.json"
     }
-    
+
+    def start_requests(self):
+        for url in self.start_urls:
+            yield scrapy.Request(url=url, callback=self.parse,method='GET',headers={"User-Agent":getAgent()})
+
     def parse(self, response):
-        time.sleep(2)
+        self.logger.info('='*15+'PARSE'+'='*15)
+        self.logger.info(response.request.headers)
+        time.sleep(10)
         divs = response.xpath('//tr[contains(@class,"cursor-pointer")]')
         for div in divs:
             item = ElderScrollsItem()
