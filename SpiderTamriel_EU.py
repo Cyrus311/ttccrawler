@@ -15,7 +15,7 @@ class SpiderTamrielAlarm(scrapy.Spider):
     name = 'SpiderTamrielAlarm'
 
     custom_settings = {
-        "DOWNLOAD_DELAY": 8,
+        "DOWNLOAD_DELAY": 5,
         "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
         "CONCURRENT_REQUESTS": 1,
         "AUTOTHROTTLE_ENABLED": True,
@@ -31,17 +31,20 @@ class SpiderTamrielAlarm(scrapy.Spider):
     def parse(self, response):
         self.logger.info('='*15+'PARSE'+'='*15)
         self.logger.info(response.request.headers)
-        time.sleep(10)
+        time.sleep(1)
         divs = response.xpath('//tr[contains(@class,"cursor-pointer")]')
         for div in divs:
             item = ElderScrollsItem()
             parsed = urlparse(response.request.url)
             item['itemId'] = parse_qs(parsed.query)['ItemID'][0].strip()
             tradeLink = div.xpath(
-                "normalize-space(//tr//@data-on-click-link)").extract_first()
+                ".//@data-on-click-link").extract_first()
             item['tradeId'] = tradeLink.split('/')[4]
             item['name'] = div.xpath(
-                "normalize-space((.//td//div[contains(@class,'item-quality-')]))").extract_first()
+                "normalize-space(.//td//div[contains(@class,'item-quality-')])").extract_first()
+            item['trait'] = div.xpath(
+                "normalize-space(.//td//img//@data-trait)").extract_first()
+
             qualityClassName = div.xpath(
                 "normalize-space(.//div//@class)").extract_first()
 

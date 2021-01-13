@@ -13,6 +13,7 @@ class ElderScrollsItem(scrapy.Item):
     allData= scrapy.Field()
     
     name = scrapy.Field()
+    trait = scrapy.Field()
     tradeId = scrapy.Field()
     itemId = scrapy.Field()
     quality = scrapy.Field()
